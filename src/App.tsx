@@ -1,7 +1,4 @@
-import {
-  Refine,
-  Authenticated,
-} from "@refinedev/core";
+import { Refine, Authenticated } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
@@ -40,6 +37,10 @@ import { dataProvider } from "./providers/data";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { Header } from "./components/header";
 import authProvider from "./providers/auth";
+
+const AppTitle = () => (
+  <span style={{ fontSize: 18, fontWeight: 600 }}>Orotrack</span>
+);
 
 function App() {
   return (
@@ -91,7 +92,9 @@ function App() {
                       >
                         <ThemedLayout
                           Header={Header}
-                          Sider={(props) => <ThemedSider {...props} fixed />}
+                          Sider={(props) => (
+                            <ThemedSider {...props} fixed Title={AppTitle} />
+                          )}
                         >
                           <Outlet />
                         </ThemedLayout>
@@ -126,14 +129,21 @@ function App() {
                       </Authenticated>
                     }
                   >
-                    <Route path="/login" element={<AuthPage type="login" />} />
+                    <Route
+                      path="/login"
+                      element={<AuthPage type="login" title={<AppTitle />} />}
+                    />
                     <Route
                       path="/register"
-                      element={<AuthPage type="register" />}
+                      element={
+                        <AuthPage type="register" title={<AppTitle />} />
+                      }
                     />
                     <Route
                       path="/forgot-password"
-                      element={<AuthPage type="forgotPassword" />}
+                      element={
+                        <AuthPage type="forgotPassword" title={<AppTitle />} />
+                      }
                     />
                   </Route>
                 </Routes>
