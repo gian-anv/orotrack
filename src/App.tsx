@@ -1,7 +1,5 @@
 import {
   Refine,
-  GitHubBanner,
-  WelcomePage,
   Authenticated,
 } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
@@ -46,7 +44,6 @@ import authProvider from "./providers/auth";
 function App() {
   return (
     <BrowserRouter>
-      <GitHubBanner />
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <AntdApp>
