@@ -21,17 +21,11 @@ import routerProvider, {
   DocumentTitleHandler,
 } from "@refinedev/react-router";
 import {
-  BlogPostList,
-  BlogPostCreate,
-  BlogPostEdit,
-  BlogPostShow,
-} from "./pages/blog-posts";
-import {
-  CategoryList,
-  CategoryCreate,
-  CategoryEdit,
-  CategoryShow,
-} from "./pages/categories";
+  PatientList,
+  PatientCreate,
+  PatientEdit,
+  PatientShow,
+} from "./pages/patients";
 import { supabaseClient } from "./providers/supabase-client";
 import { dataProvider } from "./providers/data";
 import { ColorModeContextProvider } from "./contexts/color-mode";
@@ -57,22 +51,13 @@ function App() {
                 notificationProvider={useNotificationProvider}
                 resources={[
                   {
-                    name: "blog_posts",
-                    list: "/blog-posts",
-                    create: "/blog-posts/create",
-                    edit: "/blog-posts/edit/:id",
-                    show: "/blog-posts/show/:id",
+                    name: "patients",
+                    list: "/patients",
+                    create: "/patients/create",
+                    edit: "/patients/edit/:id",
+                    show: "/patients/show/:id",
                     meta: {
-                      canDelete: true,
-                    },
-                  },
-                  {
-                    name: "categories",
-                    list: "/categories",
-                    create: "/categories/create",
-                    edit: "/categories/edit/:id",
-                    show: "/categories/show/:id",
-                    meta: {
+                      label: "Patients",
                       canDelete: true,
                     },
                   },
@@ -103,19 +88,13 @@ function App() {
                   >
                     <Route
                       index
-                      element={<NavigateToResource resource="blog_posts" />}
+                      element={<NavigateToResource resource="patients" />}
                     />
-                    <Route path="/blog-posts">
-                      <Route index element={<BlogPostList />} />
-                      <Route path="create" element={<BlogPostCreate />} />
-                      <Route path="edit/:id" element={<BlogPostEdit />} />
-                      <Route path="show/:id" element={<BlogPostShow />} />
-                    </Route>
-                    <Route path="/categories">
-                      <Route index element={<CategoryList />} />
-                      <Route path="create" element={<CategoryCreate />} />
-                      <Route path="edit/:id" element={<CategoryEdit />} />
-                      <Route path="show/:id" element={<CategoryShow />} />
+                    <Route path="/patients">
+                      <Route index element={<PatientList />} />
+                      <Route path="create" element={<PatientCreate />} />
+                      <Route path="edit/:id" element={<PatientEdit />} />
+                      <Route path="show/:id" element={<PatientShow />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
