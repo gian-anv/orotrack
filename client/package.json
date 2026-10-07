@@ -10,8 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@refinedev/core": "^5.0.12",
+    "@refinedev/react-router": "^2.0.4",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-router": "^7.18.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
