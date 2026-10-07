@@ -18,12 +18,14 @@ const adminEmail = process.env.ADMIN_EMAIL;
 const adminPassword = process.env.ADMIN_PASSWORD;
 
 if (adminEmail && adminPassword) {
-  const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(adminEmail);
-  if (!existing) {
-    const hash = bcrypt.hashSync(adminPassword, 10);
+  const hash = bcrypt.hashSync(adminPassword, 10);
+  const admin = db.prepare("SELECT id FROM users ORDER BY id LIMIT 1").get();
+  if (admin) {
+    db.prepare("UPDATE users SET email = ?, password_hash = ? WHERE id = ?").run(adminEmail, hash, admin.id);
+  } else {
     db.prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)").run(adminEmail, hash);
-    console.log(`Created user ${adminEmail}`);
   }
+  console.log(`Admin account is ${adminEmail}`);
 }
 
 app.post("/api/login", (req, res) => {
