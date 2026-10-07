@@ -1,14 +1,69 @@
+import { useState } from "react";
 import { useList } from "@refinedev/core";
+
+function uniqueValues(rows, field) {
+  return [...new Set(rows.map((row) => row[field]))].sort();
+}
 
 export default function AttemptList() {
   const { result, query } = useList({ resource: "attempts", pagination: { mode: "off" } });
+  const [participant, setParticipant] = useState("");
+  const [exercise, setExercise] = useState("");
+  const [validity, setValidity] = useState("");
 
   if (query.isLoading) return <p>Loading...</p>;
+
+  const attempts = result.data ?? [];
+  const visible = attempts.filter(
+    (attempt) =>
+      (participant === "" || attempt.participant_code === participant) &&
+      (exercise === "" || attempt.exercise === exercise) &&
+      (validity === "" || attempt.input_validity === validity)
+  );
+
+  function resetFilters() {
+    setParticipant("");
+    setExercise("");
+    setValidity("");
+  }
 
   return (
     <div>
       <h1>Attempts</h1>
-      <p>{result.data.length} attempts</p>
+
+      <div className="filters">
+        <label>
+          Participant
+          <select value={participant} onChange={(event) => setParticipant(event.target.value)}>
+            <option value="">All participants</option>
+            {uniqueValues(attempts, "participant_code").map((value) => (
+              <option key={value} value={value}>{value}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Exercise
+          <select value={exercise} onChange={(event) => setExercise(event.target.value)}>
+            <option value="">All exercises</option>
+            {uniqueValues(attempts, "exercise").map((value) => (
+              <option key={value} value={value}>{value}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Input validity
+          <select value={validity} onChange={(event) => setValidity(event.target.value)}>
+            <option value="">All</option>
+            {uniqueValues(attempts, "input_validity").map((value) => (
+              <option key={value} value={value}>{value}</option>
+            ))}
+          </select>
+        </label>
+        <button onClick={resetFilters}>Reset</button>
+      </div>
+
+      <p>Showing {visible.length} of {attempts.length} attempts</p>
+
       <table>
         <thead>
           <tr>
@@ -21,7 +76,7 @@ export default function AttemptList() {
           </tr>
         </thead>
         <tbody>
-          {result.data.map((attempt) => (
+          {visible.map((attempt) => (
             <tr key={attempt.id} className={attempt.input_validity === "valid" ? "" : "invalid"}>
               <td>{attempt.timestamp}</td>
               <td>{attempt.participant_code}</td>

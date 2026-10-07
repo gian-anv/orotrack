@@ -192,3 +192,21 @@ tbody tr:last-child td {
 tr.invalid td {
   background: var(--orange-bg);
 }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.filters label {
+  flex: 1;
+  min-width: 160px;
+  margin-bottom: 0;
+}
