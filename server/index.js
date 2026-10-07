@@ -1,26 +1,25 @@
 import express from "express";
-import { DatabaseSync } from "node:sqlite";
-import fs from "node:fs";
-import path from "node:path";
+import bcrypt from "bcryptjs";
+import db from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-const dataDir = process.env.DATA_DIR || "../data";
-fs.mkdirSync(dataDir, { recursive: true });
-const db = new DatabaseSync(path.join(dataDir, "data.sqlite"));
+const adminEmail = process.env.ADMIN_EMAIL;
+const adminPassword = process.env.ADMIN_PASSWORD;
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS visits (
-    id INTEGER PRIMARY KEY,
-    visited_at TEXT NOT NULL
-  )
-`);
+if (adminEmail && adminPassword) {
+  const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(adminEmail);
+  if (!existing) {
+    const hash = bcrypt.hashSync(adminPassword, 10);
+    db.prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)").run(adminEmail, hash);
+    console.log(`Created user ${adminEmail}`);
+  }
+}
 
 app.get("/", (req, res) => {
-  db.prepare("INSERT INTO visits (visited_at) VALUES (?)").run(new Date().toISOString());
-  const row = db.prepare("SELECT COUNT(*) AS total FROM visits").get();
-  res.send(`Hello from Session Review. Visits so far: ${row.total}`);
+  const row = db.prepare("SELECT COUNT(*) AS total FROM users").get();
+  res.send(`Hello from Session Review. Users: ${row.total}`);
 });
 
 app.listen(port, () => {
