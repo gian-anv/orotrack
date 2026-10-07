@@ -10,21 +10,29 @@ export default function AttemptList() {
   const [participant, setParticipant] = useState("");
   const [exercise, setExercise] = useState("");
   const [validity, setValidity] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   if (query.isLoading) return <p>Loading...</p>;
 
   const attempts = result.data ?? [];
-  const visible = attempts.filter(
-    (attempt) =>
+  const visible = attempts.filter((attempt) => {
+    const day = attempt.timestamp.slice(0, 10);
+    return (
       (participant === "" || attempt.participant_code === participant) &&
       (exercise === "" || attempt.exercise === exercise) &&
-      (validity === "" || attempt.input_validity === validity)
-  );
+      (validity === "" || attempt.input_validity === validity) &&
+      (fromDate === "" || day >= fromDate) &&
+      (toDate === "" || day <= toDate)
+    );
+  });
 
   function resetFilters() {
     setParticipant("");
     setExercise("");
     setValidity("");
+    setFromDate("");
+    setToDate("");
   }
 
   return (
@@ -58,6 +66,14 @@ export default function AttemptList() {
               <option key={value} value={value}>{value}</option>
             ))}
           </select>
+        </label>
+        <label>
+          From
+          <input type="date" value={fromDate} onChange={(event) => setFromDate(event.target.value)} />
+        </label>
+        <label>
+          To
+          <input type="date" value={toDate} onChange={(event) => setToDate(event.target.value)} />
         </label>
         <button onClick={resetFilters}>Reset</button>
       </div>
