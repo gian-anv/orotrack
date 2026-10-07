@@ -24,7 +24,7 @@ export default function ParticipantEdit() {
       <h1>Edit participant</h1>
       <label>Code <input name="code" defaultValue={participant.code} required /></label>
       <label>Age group <input name="age_group" defaultValue={participant.age_group} required /></label>
-      <label>Target sounds <input name="target_sounds" defaultValue={participant.target_sounds} required /></label>
+      <label>Target sounds (optional) <input name="target_sounds" defaultValue={participant.target_sounds} /></label>
       <button type="submit" disabled={formLoading}>Save</button>{" "}
       <Link to="/participants">Cancel</Link>
       {mutation.error && <p>{mutation.error.message}</p>}

@@ -19,7 +19,7 @@ export default function ParticipantCreate() {
       <h1>Add participant</h1>
       <label>Code <input name="code" placeholder="PT-0142" required /></label>
       <label>Age group <input name="age_group" placeholder="7-9" required /></label>
-      <label>Target sounds <input name="target_sounds" placeholder="/r/, /s/" required /></label>
+      <label>Target sounds (optional) <input name="target_sounds" placeholder="/r/, /s/" /></label>
       <button type="submit" disabled={formLoading}>Save</button>{" "}
       <Link to="/participants">Cancel</Link>
       {mutation.error && <p>{mutation.error.message}</p>}

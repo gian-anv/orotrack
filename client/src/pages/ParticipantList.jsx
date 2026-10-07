@@ -34,7 +34,7 @@ export default function ParticipantList() {
             <tr key={participant.id}>
               <td>{participant.code}</td>
               <td>{participant.age_group}</td>
-              <td>{participant.target_sounds}</td>
+              <td>{participant.target_sounds || "-"}</td>
               <td>
                 <Link to={`/participants/edit/${participant.id}`}>Edit</Link>{" "}
                 <button className="danger" onClick={() => handleDelete(participant.id)}>Delete</button>
