@@ -1,3 +1,4 @@
+import path from "node:path";
 import express from "express";
 import bcrypt from "bcryptjs";
 import db from "./db.js";
@@ -20,11 +21,6 @@ if (adminEmail && adminPassword) {
     console.log(`Created user ${adminEmail}`);
   }
 }
-
-app.get("/", (req, res) => {
-  const row = db.prepare("SELECT COUNT(*) AS total FROM users").get();
-  res.send(`Hello from Session Review. Users: ${row.total}`);
-});
 
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body || {};
@@ -54,6 +50,17 @@ function requireAuth(req, res, next) {
 
 app.get("/api/me", requireAuth, (req, res) => {
   res.json({ userId: req.user.userId, email: req.user.email });
+});
+
+app.use("/api", (req, res) => {
+  res.status(404).json({ message: "Not found" });
+});
+
+const clientDist = path.join(import.meta.dirname, "../client/dist");
+app.use(express.static(clientDist));
+
+app.use((req, res) => {
+  res.sendFile(path.join(clientDist, "index.html"));
 });
 
 app.listen(port, () => {
