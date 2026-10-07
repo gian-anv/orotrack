@@ -15,4 +15,13 @@ db.exec(`
   )
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS participants (
+    id INTEGER PRIMARY KEY,
+    code TEXT NOT NULL UNIQUE,
+    age_group TEXT NOT NULL,
+    target_sounds TEXT NOT NULL
+  )
+`);
+
 export default db;

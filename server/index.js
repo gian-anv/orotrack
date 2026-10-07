@@ -1,3 +1,5 @@
+import requireAuth from "./requireAuth.js";
+import participantsRouter from "./routes/participants.js";
 import path from "node:path";
 import express from "express";
 import bcrypt from "bcryptjs";
@@ -37,19 +39,15 @@ app.post("/api/login", (req, res) => {
   res.json({ token });
 });
 
-function requireAuth(req, res, next) {
-  const header = req.headers.authorization || "";
-  const token = header.replace("Bearer ", "");
-  try {
-    req.user = jwt.verify(token, jwtSecret);
-    next();
-  } catch {
-    res.status(401).json({ message: "Not logged in" });
-  }
-}
-
 app.get("/api/me", requireAuth, (req, res) => {
   res.json({ userId: req.user.userId, email: req.user.email });
+});
+
+app.use("/api/participants", requireAuth, participantsRouter);
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: "Something went wrong on the server" });
 });
 
 app.use("/api", (req, res) => {
