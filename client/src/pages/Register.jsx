@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { useLogin } from "@refinedev/core";
+import { useRegister } from "@refinedev/core";
 import { Link } from "react-router";
 
-export default function Login() {
+export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { mutate: login } = useLogin();
+  const { mutate: register } = useRegister();
 
   function handleSubmit(event) {
     event.preventDefault();
-    login(
+    register(
       { email, password },
       {
         onSuccess: (result) => {
@@ -22,15 +22,15 @@ export default function Login() {
 
   return (
     <form onSubmit={handleSubmit} className="login">
-      <h1>Sign in</h1>
+      <h1>Create account</h1>
       <input type="email" placeholder="Email" value={email}
         onChange={(e) => setEmail(e.target.value)} required />
-      <input type="password" placeholder="Password" value={password}
-        onChange={(e) => setPassword(e.target.value)} required />
-      <button type="submit">Sign in</button>
+      <input type="password" placeholder="Password (at least 8 characters)" value={password}
+        onChange={(e) => setPassword(e.target.value)} minLength={8} required />
+      <button type="submit">Create account</button>
       {error && <p>{error}</p>}
       <div className="hint">
-        No account yet? <Link to="/register">Create one</Link>
+        Already have an account? <Link to="/login">Sign in</Link>
       </div>
     </form>
   );

@@ -19,15 +19,19 @@ router.get("/", (req, res) => {
       SELECT uploads.*, participants.code AS participant_code
       FROM uploads
       JOIN participants ON participants.id = uploads.participant_id
+      WHERE participants.user_id = ?
       ORDER BY uploads.uploaded_at DESC
     `)
-    .all();
+    .all(req.user.userId);
   res.json(rows);
 });
 
 router.post("/", upload.single("file"), (req, res) => {
-  const participantId = Number(req.body.participant_id);
-  if (!req.file || !participantId) {
+  const participant = db
+    .prepare("SELECT id FROM participants WHERE id = ? AND user_id = ?")
+    .get(Number(req.body?.participant_id), req.user.userId);
+  if (!req.file || !participant) {
+    if (req.file) fs.unlinkSync(req.file.path);
     return res.status(400).json({ message: "A participant and a CSV file are required" });
   }
 
@@ -53,7 +57,7 @@ router.post("/", upload.single("file"), (req, res) => {
 
   const uploadResult = db
     .prepare("INSERT INTO uploads (participant_id, original_name, stored_name, row_count, uploaded_at) VALUES (?, ?, ?, ?, ?)")
-    .run(participantId, req.file.originalname, req.file.filename, rows.length, new Date().toISOString());
+    .run(participant.id, req.file.originalname, req.file.filename, rows.length, new Date().toISOString());
 
   const insertAttempt = db.prepare(
     "INSERT INTO attempts (upload_id, participant_id, timestamp, exercise, result, confidence_score, input_validity) VALUES (?, ?, ?, ?, ?, ?, ?)"
@@ -61,7 +65,7 @@ router.post("/", upload.single("file"), (req, res) => {
   for (const row of rows) {
     insertAttempt.run(
       uploadResult.lastInsertRowid,
-      participantId,
+      participant.id,
       row.timestamp,
       row.exercise,
       row.result || null,

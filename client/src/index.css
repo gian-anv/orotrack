@@ -210,3 +210,9 @@ tr.invalid td {
   min-width: 160px;
   margin-bottom: 0;
 }
+
+.hint {
+  margin-top: 16px;
+  color: var(--muted);
+  text-align: center;
+}

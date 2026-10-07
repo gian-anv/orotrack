@@ -1,26 +1,32 @@
-const authProvider = {
-  login: async ({ email, password }) => {
-    const response = await fetch("/api/login", {
+async function signIn(path, credentials) {
+  try {
+    const response = await fetch(path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(credentials),
     });
+    const body = await response.json();
 
     if (!response.ok) {
-      return {
-        success: false,
-        error: { name: "LoginError", message: "Wrong email or password" },
-      };
+      return { success: false, error: { name: "AuthError", message: body.message } };
     }
 
-    const { token } = await response.json();
-    localStorage.setItem("token", token);
+    localStorage.setItem("token", body.token);
     return { success: true, redirectTo: "/" };
-  },
+  } catch {
+    return { success: false, error: { name: "AuthError", message: "Could not reach the server" } };
+  }
+}
+
+const authProvider = {
+  login: ({ email, password }) => signIn("/api/login", { email, password }),
+
+  register: ({ email, password }) => signIn("/api/register", { email, password }),
 
   logout: async () => {
     localStorage.removeItem("token");
-    return { success: true, redirectTo: "/login" };
+    window.location.assign("/login");
+    return { success: true };
   },
 
   check: async () => {

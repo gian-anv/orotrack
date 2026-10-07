@@ -9,9 +9,10 @@ router.get("/", (req, res) => {
       SELECT attempts.*, participants.code AS participant_code
       FROM attempts
       JOIN participants ON participants.id = attempts.participant_id
+      WHERE participants.user_id = ?
       ORDER BY attempts.timestamp DESC
     `)
-    .all();
+    .all(req.user.userId);
   res.json(rows);
 });
 

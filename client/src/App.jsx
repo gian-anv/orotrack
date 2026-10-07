@@ -5,6 +5,7 @@ import authProvider from "./authProvider.js";
 import dataProvider from "./dataProvider.js";
 import Layout from "./Layout.jsx";
 import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 import ParticipantList from "./pages/ParticipantList.jsx";
 import ParticipantCreate from "./pages/ParticipantCreate.jsx";
 import ParticipantEdit from "./pages/ParticipantEdit.jsx";
@@ -54,6 +55,7 @@ export default function App() {
             }
           >
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Route>
         </Routes>
       </Refine>

@@ -24,6 +24,12 @@ db.exec(`
   )
 `);
 
+const participantColumns = db.prepare("PRAGMA table_info(participants)").all();
+if (!participantColumns.some((column) => column.name === "user_id")) {
+  db.exec("ALTER TABLE participants ADD COLUMN user_id INTEGER REFERENCES users(id)");
+}
+db.exec("UPDATE participants SET user_id = (SELECT MIN(id) FROM users) WHERE user_id IS NULL");
+
 db.exec("PRAGMA foreign_keys = ON");
 
 db.exec(`
