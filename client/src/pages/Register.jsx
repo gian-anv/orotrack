@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRegister } from "@refinedev/core";
 import { Link } from "react-router";
+import AuthPage from "../AuthPage.jsx";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -21,17 +22,19 @@ export default function Register() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="login">
-      <h1>Create account</h1>
-      <input type="email" placeholder="Email" value={email}
-        onChange={(e) => setEmail(e.target.value)} required />
-      <input type="password" placeholder="Password (at least 8 characters)" value={password}
-        onChange={(e) => setPassword(e.target.value)} minLength={8} required />
-      <button type="submit">Create account</button>
-      {error && <p>{error}</p>}
-      <div className="hint">
-        Already have an account? <Link to="/login">Sign in</Link>
-      </div>
-    </form>
+    <AuthPage>
+      <form onSubmit={handleSubmit} className="login">
+        <h1>Create account</h1>
+        <input type="email" placeholder="Email" value={email}
+          onChange={(e) => setEmail(e.target.value)} required />
+        <input type="password" placeholder="Password (at least 8 characters)" value={password}
+          onChange={(e) => setPassword(e.target.value)} minLength={8} required />
+        <button type="submit">Create account</button>
+        {error && <p>{error}</p>}
+        <div className="hint">
+          Already have an account? <Link to="/login">Sign in</Link>
+        </div>
+      </form>
+    </AuthPage>
   );
 }

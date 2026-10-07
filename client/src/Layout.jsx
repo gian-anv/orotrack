@@ -1,5 +1,6 @@
 import { useLogout } from "@refinedev/core";
 import { NavLink, Outlet } from "react-router";
+import Logo from "./Logo.jsx";
 
 export default function Layout() {
   const { mutate: logout } = useLogout();
@@ -7,7 +8,7 @@ export default function Layout() {
   return (
     <div>
       <nav>
-        <strong>Session Review</strong>
+        <Logo />
         <div>
           <NavLink to="/participants">Participants</NavLink>
           <NavLink to="/upload">Upload</NavLink>
