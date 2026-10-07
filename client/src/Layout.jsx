@@ -9,6 +9,8 @@ export default function Layout() {
       <nav>
         <strong>Session Review</strong>{" "}
         <Link to="/participants">Participants</Link>{" "}
+        <Link to="/upload">Upload</Link>{" "}
+        <Link to="/attempts">Attempts</Link>{" "}
         <button onClick={() => logout()}>Sign out</button>
       </nav>
       <main>

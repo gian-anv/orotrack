@@ -1,10 +1,12 @@
-import requireAuth from "./requireAuth.js";
-import participantsRouter from "./routes/participants.js";
-import path from "node:path";
 import express from "express";
 import bcrypt from "bcryptjs";
-import db from "./db.js";
 import jwt from "jsonwebtoken";
+import path from "node:path";
+import db from "./db.js";
+import requireAuth from "./requireAuth.js";
+import participantsRouter from "./routes/participants.js";
+import uploadsRouter from "./routes/uploads.js";
+import attemptsRouter from "./routes/attempts.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -44,11 +46,8 @@ app.get("/api/me", requireAuth, (req, res) => {
 });
 
 app.use("/api/participants", requireAuth, participantsRouter);
-
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ message: "Something went wrong on the server" });
-});
+app.use("/api/uploads", requireAuth, uploadsRouter);
+app.use("/api/attempts", requireAuth, attemptsRouter);
 
 app.use("/api", (req, res) => {
   res.status(404).json({ message: "Not found" });
@@ -59,6 +58,11 @@ app.use(express.static(clientDist));
 
 app.use((req, res) => {
   res.sendFile(path.join(clientDist, "index.html"));
+});
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: "Something went wrong on the server" });
 });
 
 app.listen(port, () => {

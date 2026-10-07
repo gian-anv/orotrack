@@ -24,4 +24,30 @@ db.exec(`
   )
 `);
 
+db.exec("PRAGMA foreign_keys = ON");
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS uploads (
+    id INTEGER PRIMARY KEY,
+    participant_id INTEGER NOT NULL REFERENCES participants(id) ON DELETE CASCADE,
+    original_name TEXT NOT NULL,
+    stored_name TEXT NOT NULL,
+    row_count INTEGER NOT NULL,
+    uploaded_at TEXT NOT NULL
+  )
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS attempts (
+    id INTEGER PRIMARY KEY,
+    upload_id INTEGER NOT NULL REFERENCES uploads(id) ON DELETE CASCADE,
+    participant_id INTEGER NOT NULL REFERENCES participants(id) ON DELETE CASCADE,
+    timestamp TEXT NOT NULL,
+    exercise TEXT NOT NULL,
+    result TEXT,
+    confidence_score REAL NOT NULL,
+    input_validity TEXT NOT NULL
+  )
+`);
+
 export default db;

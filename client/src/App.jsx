@@ -8,6 +8,8 @@ import Login from "./pages/Login.jsx";
 import ParticipantList from "./pages/ParticipantList.jsx";
 import ParticipantCreate from "./pages/ParticipantCreate.jsx";
 import ParticipantEdit from "./pages/ParticipantEdit.jsx";
+import Upload from "./pages/Upload.jsx";
+import AttemptList from "./pages/AttemptList.jsx";
 
 export default function App() {
   return (
@@ -23,6 +25,8 @@ export default function App() {
             create: "/participants/create",
             edit: "/participants/edit/:id",
           },
+          { name: "uploads", list: "/upload" },
+          { name: "attempts", list: "/attempts" },
         ]}
         options={{ disableTelemetry: true }}
       >
@@ -38,6 +42,8 @@ export default function App() {
             <Route path="/participants" element={<ParticipantList />} />
             <Route path="/participants/create" element={<ParticipantCreate />} />
             <Route path="/participants/edit/:id" element={<ParticipantEdit />} />
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/attempts" element={<AttemptList />} />
           </Route>
 
           <Route
