@@ -22,7 +22,7 @@ export default function AttemptList() {
         </thead>
         <tbody>
           {result.data.map((attempt) => (
-            <tr key={attempt.id}>
+            <tr key={attempt.id} className={attempt.input_validity === "valid" ? "" : "invalid"}>
               <td>{attempt.timestamp}</td>
               <td>{attempt.participant_code}</td>
               <td>{attempt.exercise}</td>

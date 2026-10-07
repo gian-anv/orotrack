@@ -19,7 +19,7 @@ export default function ParticipantList() {
   return (
     <div>
       <h1>Participants</h1>
-      <Link to="/participants/create">Add participant</Link>
+      <Link to="/participants/create" className="button">Add participant</Link>
       <table>
         <thead>
           <tr>
@@ -37,7 +37,7 @@ export default function ParticipantList() {
               <td>{participant.target_sounds}</td>
               <td>
                 <Link to={`/participants/edit/${participant.id}`}>Edit</Link>{" "}
-                <button onClick={() => handleDelete(participant.id)}>Delete</button>
+                <button className="danger" onClick={() => handleDelete(participant.id)}>Delete</button>
               </td>
             </tr>
           ))}
