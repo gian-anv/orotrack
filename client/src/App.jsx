@@ -14,6 +14,7 @@ import AttemptList from "./pages/AttemptList.jsx";
 import UserList from "./pages/UserList.jsx";
 import UserCreate from "./pages/UserCreate.jsx";
 import Trends from "./pages/Trends.jsx";
+import Help from "./pages/Help.jsx";
 
 export default function App() {
   return (
@@ -36,6 +37,8 @@ export default function App() {
         options={{ disableTelemetry: true }}
       >
         <Routes>
+          <Route path="/help" element={<Help />} />
+
           <Route
             element={
               <Authenticated key="protected" fallback={<Navigate to="/login" />}>

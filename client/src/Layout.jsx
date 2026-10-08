@@ -20,6 +20,7 @@ export default function Layout() {
               <NavLink to="/trends">Trends</NavLink>
             </>
           )}
+          <NavLink to="/help">Help</NavLink>
         </div>
         <button onClick={() => logout()}>Sign out</button>
       </nav>
