@@ -362,3 +362,7 @@ button.plain:hover {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 13px;
 }
+
+td button + button {
+  margin-left: 0.75rem;
+}

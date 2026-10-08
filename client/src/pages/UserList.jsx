@@ -63,7 +63,7 @@ export default function UserList() {
                 {user.role === "admin" ? "-" : (
                   <>
                     <button className="plain" onClick={() => rename(user)}>Rename</button>
-                    <button className="plain" onClick={() => resetPassword(user)}>Reset password</button>{" "}
+                    <button className="plain" onClick={() => resetPassword(user)}>Reset password</button>
                     <button className="danger" onClick={() => handleDelete(user)}>Delete</button>
                   </>
                 )}
