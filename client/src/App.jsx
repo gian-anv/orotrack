@@ -5,12 +5,14 @@ import authProvider from "./authProvider.js";
 import dataProvider from "./dataProvider.js";
 import Layout from "./Layout.jsx";
 import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
+import Home from "./pages/Home.jsx";
 import ParticipantList from "./pages/ParticipantList.jsx";
 import ParticipantCreate from "./pages/ParticipantCreate.jsx";
 import ParticipantEdit from "./pages/ParticipantEdit.jsx";
 import Upload from "./pages/Upload.jsx";
 import AttemptList from "./pages/AttemptList.jsx";
+import UserList from "./pages/UserList.jsx";
+import UserCreate from "./pages/UserCreate.jsx";
 
 export default function App() {
   return (
@@ -28,6 +30,7 @@ export default function App() {
           },
           { name: "uploads", list: "/upload" },
           { name: "attempts", list: "/attempts" },
+          { name: "users", list: "/users", create: "/users/create" },
         ]}
         options={{ disableTelemetry: true }}
       >
@@ -39,12 +42,14 @@ export default function App() {
               </Authenticated>
             }
           >
-            <Route index element={<Navigate to="/participants" />} />
+            <Route index element={<Home />} />
             <Route path="/participants" element={<ParticipantList />} />
             <Route path="/participants/create" element={<ParticipantCreate />} />
             <Route path="/participants/edit/:id" element={<ParticipantEdit />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/attempts" element={<AttemptList />} />
+            <Route path="/users" element={<UserList />} />
+            <Route path="/users/create" element={<UserCreate />} />
           </Route>
 
           <Route
@@ -55,7 +60,6 @@ export default function App() {
             }
           >
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
           </Route>
         </Routes>
       </Refine>

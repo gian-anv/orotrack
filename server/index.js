@@ -7,11 +7,12 @@ import requireAuth from "./requireAuth.js";
 import participantsRouter from "./routes/participants.js";
 import uploadsRouter from "./routes/uploads.js";
 import attemptsRouter from "./routes/attempts.js";
+import requireAdmin from "./requireAdmin.js";
+import usersRouter from "./routes/users.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
 const jwtSecret = process.env.JWT_SECRET;
-const MAX_USERS = 6;
 
 app.use(express.json());
 
@@ -22,15 +23,15 @@ if (adminEmail && adminPassword) {
   const hash = bcrypt.hashSync(adminPassword, 10);
   const admin = db.prepare("SELECT id FROM users ORDER BY id LIMIT 1").get();
   if (admin) {
-    db.prepare("UPDATE users SET email = ?, password_hash = ? WHERE id = ?").run(adminEmail, hash, admin.id);
+    db.prepare("UPDATE users SET email = ?, password_hash = ?, role = 'admin', name = 'Administrator' WHERE id = ?").run(adminEmail, hash, admin.id);
   } else {
-    db.prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)").run(adminEmail, hash);
+    db.prepare("INSERT INTO users (name, email, password_hash, role) VALUES ('Administrator', ?, ?, 'admin')").run(adminEmail, hash);
   }
   console.log(`Admin account is ${adminEmail}`);
 }
 
 function createToken(user) {
-  return jwt.sign({ userId: user.id, email: user.email }, jwtSecret, { expiresIn: "7d" });
+  return jwt.sign({ userId: user.id, email: user.email, role: user.role }, jwtSecret, { expiresIn: "7d" });
 }
 
 app.post("/api/login", (req, res) => {
@@ -47,33 +48,14 @@ app.post("/api/login", (req, res) => {
   res.json({ token: createToken(user) });
 });
 
-app.post("/api/register", (req, res) => {
-  const { email, password } = req.body || {};
-  if (typeof email !== "string" || typeof password !== "string" || !email.includes("@") || password.length < 8) {
-    return res.status(400).json({ message: "Enter an email and a password of at least 8 characters" });
-  }
-
-  const { total } = db.prepare("SELECT COUNT(*) AS total FROM users").get();
-  if (total >= MAX_USERS) {
-    return res.status(403).json({ message: `Registration is closed. The limit of ${MAX_USERS} accounts has been reached.` });
-  }
-
-  if (db.prepare("SELECT id FROM users WHERE email = ?").get(email)) {
-    return res.status(409).json({ message: "An account with that email already exists" });
-  }
-
-  const hash = bcrypt.hashSync(password, 10);
-  const result = db.prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)").run(email, hash);
-  res.status(201).json({ token: createToken({ id: result.lastInsertRowid, email }) });
-});
-
 app.get("/api/me", requireAuth, (req, res) => {
-  res.json({ userId: req.user.userId, email: req.user.email });
+  res.json({ userId: req.user.userId, email: req.user.email, role: req.user.role });
 });
 
 app.use("/api/participants", requireAuth, participantsRouter);
 app.use("/api/uploads", requireAuth, uploadsRouter);
 app.use("/api/attempts", requireAuth, attemptsRouter);
+app.use("/api/users", requireAuth, requireAdmin, usersRouter);
 
 app.use("/api", (req, res) => {
   res.status(404).json({ message: "Not found" });

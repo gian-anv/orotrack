@@ -15,6 +15,14 @@ db.exec(`
   )
 `);
 
+const userColumns = db.prepare("PRAGMA table_info(users)").all().map((column) => column.name);
+if (!userColumns.includes("name")) {
+  db.exec("ALTER TABLE users ADD COLUMN name TEXT NOT NULL DEFAULT ''");
+}
+if (!userColumns.includes("role")) {
+  db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'");
+}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS participants (
     id INTEGER PRIMARY KEY,

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLogin } from "@refinedev/core";
-import { Link } from "react-router";
 import AuthPage from "../AuthPage.jsx";
 import Logo from "../Logo.jsx";
 
@@ -33,9 +32,6 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)} required />
         <button type="submit">Sign in</button>
         {error && <p>{error}</p>}
-        <div className="hint">
-          No account yet? <Link to="/register">Create one</Link>
-        </div>
       </form>
     </AuthPage>
   );
