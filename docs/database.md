@@ -34,9 +34,10 @@ One row per account.
 | `name` | TEXT | Not null, default empty text |
 | `role` | TEXT | Not null, default `user`. Either `admin` or `user`. |
 
-The row with the lowest id is the administrator. At startup the server sets
-its email, password hash, name, and role from the `ADMIN_EMAIL` and
-`ADMIN_PASSWORD` settings, or creates it if the table is empty.
+The row with the lowest id is the administrator. At startup,
+`server/setupAdmin.js` sets its email, password hash, name, and role from the
+`ADMIN_EMAIL` and `ADMIN_PASSWORD` settings, or creates it if the table is
+empty.
 
 ### participants
 

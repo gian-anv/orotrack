@@ -22,7 +22,8 @@ Every push to the `main` branch starts a new deployment, which uses the
    such as Vite), build the client into `client/dist`, then install the
    server's libraries.
 2. **Start:** run `node --env-file-if-exists=.env index.js` in the `server`
-   folder. Express serves `client/dist` and the API.
+   folder. `setupAdmin.js` updates the admin account, then Express serves
+   `client/dist` and the API.
 
 The `engines` field makes Railway use Node.js 24, the version the project
 needs for its built-in SQLite module.
@@ -77,8 +78,8 @@ server starts.
 **Sign everyone out:** replace `JWT_SECRET` with a new random value and
 redeploy. Every existing token stops working.
 
-**Reset a therapist's password:** use Reset password on the Users page while
-signed in as the administrator.
+**Rename a therapist or reset their password:** use Rename or Reset password
+on the Users page while signed in as the administrator.
 
 ## Things to know
 

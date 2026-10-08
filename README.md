@@ -13,7 +13,8 @@ and all data in the app is invented.
 ## Features
 
 - Sign in with an account created by the administrator. There is no sign-up.
-- The administrator creates accounts, resets passwords, and deletes accounts.
+- The administrator creates accounts, renames them, resets passwords, and
+  deletes accounts.
 - Each therapist account has its own private participants, uploads, and attempts.
 - Add, edit, and delete participants, stored as codes such as `PT-0142`.
 - Upload a session CSV for a participant.
@@ -45,36 +46,68 @@ and all data in the app is invented.
 ## Project structure
 
 ```
-client/                   React app that runs in the browser
-  public/                 favicon and link-preview image
+client/                         React app that runs in the browser
+  index.html
+  vite.config.js                dev server, forwards /api to port 3000
+  public/                       favicon and link-preview image
   src/
-    App.jsx               Refine setup and the list of pages
-    authProvider.js       sign in, sign out, login check, role lookup
-    dataProvider.js       calls to the server's API
-    Layout.jsx            top bar for signed-in pages, links by role
-    AuthPage.jsx          layout of the sign-in page
-    Logo.jsx
-    index.css             all styling
-    pages/                one file per page
+    main.jsx                    starts React
+    App.jsx                     Refine setup and the list of pages
+    index.css                   all styling
+    assets/                     hero image for the sign-in page
+    providers/
+      authProvider.js           sign in, sign out, login check, role lookup
+      dataProvider.js           calls to the server's API
+    components/
+      Layout.jsx                top bar for signed-in pages, links by role
+      AuthPage.jsx              layout of the sign-in page
+      Logo.jsx
+    pages/
+      Home.jsx                  sends each role to its first page
+      Login.jsx
+      Help.jsx
+      participants/             list, create, and edit
+      uploads/                  upload a CSV, list uploaded files
+      attempts/                 every attempt, with filters
+      trends/                   summary numbers and chart
+      users/                    account list and create (admin)
 server/
-  index.js                login, admin account setup, route setup
-  db.js                   opens the database, creates and migrates tables
-  requireAuth.js          login check for protected routes
-  requireAdmin.js         admin check for account routes
-  routes/                 participants, uploads, attempts, trends, users
-docs/                     technical documentation
-package.json              build and start commands used by Railway
+  index.js                      connects middleware and routes, serves the client
+  db.js                         opens the database, creates and migrates tables
+  setupAdmin.js                 creates or updates the admin account at startup
+  middleware/
+    requireAuth.js              login check for protected routes
+    requireAdmin.js             admin check for account routes
+  routes/
+    auth.js                     sign in, and who is signed in
+    participants.js
+    uploads.js
+    attempts.js
+    trends.js
+    users.js                    accounts (admin)
+docs/                           technical documentation
+package.json                    build and start commands used by Railway
 ```
+
+The pages are grouped by resource, and each resource has a matching route
+file on the server: `pages/participants/` and `routes/participants.js`,
+`pages/users/` and `routes/users.js`, and so on.
 
 ## Running it locally
 
 You need Git and Node.js 24.
 
 ```bash
-git clone https://github.com/gian-anv/orotrack.git
+git clone git@github.com:gian-anv/orotrack.git
 cd orotrack/server
 npm install
+cd ../client
+npm install
 ```
+
+The clone command uses SSH, which needs an SSH key added to GitHub. Without
+one, clone with `https://github.com/gian-anv/orotrack.git` instead. That
+copy can be read and run but not pushed.
 
 Create `server/.env` with your own values:
 
@@ -84,25 +117,29 @@ ADMIN_PASSWORD=choose-a-password
 JWT_SECRET=any-long-random-text
 ```
 
-Start the server:
+`openssl rand -hex 32` prints a suitable secret. Do not set `DATA_DIR` or
+`PORT` locally.
+
+Start the server from the `server` folder:
 
 ```bash
 npm start
 ```
 
-In a second terminal, start the client:
+In a second terminal, start the client from the `client` folder:
 
 ```bash
-cd orotrack/client
-npm install
 npm run dev
 ```
 
 Open http://localhost:5173 and sign in with the email and password from
 your `.env` file. That account is the administrator. Create a therapist
 account on the Users page, then sign in with it to add participants and
-upload files. Your local copy has its own database in the `data` folder,
-separate from the live site.
+upload files.
+
+The server creates the `data` folder on its first start. It holds the local
+database and uploaded files, is kept out of Git, and is separate from the
+live site's data.
 
 ## CSV format
 
@@ -126,3 +163,5 @@ cannot contain commas or quotation marks.
 - Login tokens last seven days and cannot be cancelled early.
 - There is no password reset by email. The administrator resets passwords.
 - Deleting a participant or an account leaves the original CSV files on disk.
+- The administrator's name, email, and password come from the server
+  settings, so they can't be changed on the Users page.

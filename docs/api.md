@@ -3,6 +3,27 @@
 All routes are under `/api` and answer in JSON. Request bodies are JSON,
 except for file uploads, which use multipart form data.
 
+## All routes
+
+| Method and address | Who may call | Server file |
+|---|---|---|
+| `POST /api/login` | Public | `routes/auth.js` |
+| `GET /api/me` | Signed in | `routes/auth.js` |
+| `GET /api/participants` | Signed in | `routes/participants.js` |
+| `GET /api/participants/:id` | Signed in | `routes/participants.js` |
+| `POST /api/participants` | Signed in | `routes/participants.js` |
+| `PUT /api/participants/:id` | Signed in | `routes/participants.js` |
+| `DELETE /api/participants/:id` | Signed in | `routes/participants.js` |
+| `GET /api/uploads` | Signed in | `routes/uploads.js` |
+| `POST /api/uploads` | Signed in | `routes/uploads.js` |
+| `GET /api/attempts` | Signed in | `routes/attempts.js` |
+| `GET /api/trends/:participantId` | Signed in | `routes/trends.js` |
+| `GET /api/users` | Admin | `routes/users.js` |
+| `POST /api/users` | Admin | `routes/users.js` |
+| `PUT /api/users/:id` | Admin | `routes/users.js` |
+| `PUT /api/users/:id/password` | Admin | `routes/users.js` |
+| `DELETE /api/users/:id` | Admin | `routes/users.js` |
+
 ## Authentication
 
 Every route except `POST /api/login` needs a login token in the request
@@ -29,11 +50,11 @@ Every error has the same shape:
 | Status | Meaning |
 |---|---|
 | 400 | Missing or unacceptable input, or a CSV that fails the checks |
-| 401 | Wrong email or password, or a missing, altered, or expired token |
-| 403 | The route is for the administrator only |
-| 404 | No such record for this user, or an unknown `/api` address |
+| 401 | Wrong email or password, or a missing, altered, or expired token ("Not logged in") |
+| 403 | The route is for the administrator only ("Admins only") |
+| 404 | No such record for this user, or an unknown `/api` address ("Not found") |
 | 409 | The email or participant code is already used |
-| 500 | An unexpected server error |
+| 500 | An unexpected server error ("Something went wrong on the server") |
 
 ## Sign-in
 
@@ -53,8 +74,11 @@ Response `200`:
 { "token": "eyJhbGciOi..." }
 ```
 
-Errors: `400` if either field is missing, `401` "Wrong email or password".
-The message is the same for an unknown email and a wrong password.
+Errors:
+
+- `400` "Email and password are required"
+- `401` "Wrong email or password". The message is the same for an unknown
+  email and a wrong password, so it doesn't reveal which emails have accounts.
 
 ### GET /api/me
 
@@ -72,7 +96,7 @@ All signed in. Each user reaches only their own participants.
 |---|---|---|
 | `id` | number | Assigned by the database |
 | `code` | text | Required. Unique across all accounts. |
-| `age_group` | text | Required |
+| `age_group` | text | Required, such as `7-9` |
 | `target_sounds` | text | Optional. Stored as empty text when not given. |
 | `user_id` | number | The owner, set from the token |
 
@@ -82,7 +106,8 @@ Returns a list of the caller's participants, sorted by code.
 
 ### GET /api/participants/:id
 
-Returns one participant. `404` if it doesn't exist or belongs to someone else.
+Returns one participant. Error: `404` "Participant not found" if it doesn't
+exist or belongs to someone else.
 
 ### POST /api/participants
 
@@ -92,18 +117,22 @@ Request:
 { "code": "PT-0142", "age_group": "7-9", "target_sounds": "/r/, /s/" }
 ```
 
-Response `201`: the new participant. Errors: `400` if `code` or `age_group`
-is missing, `409` "That code is already in use. Pick a different one."
+Response `201`: the new participant.
+
+Errors:
+
+- `400` "Code and age group are required"
+- `409` "That code is already in use. Pick a different one."
 
 ### PUT /api/participants/:id
 
 Same body as create. Response `200`: the updated participant.
-Errors: `400`, `409`, and `404`.
+Errors: the same `400` and `409` as create, and `404` "Participant not found".
 
 ### DELETE /api/participants/:id
 
 Response `200`: `{ "id": 5 }`. Also deletes the participant's uploads and
-attempts. Error: `404`.
+attempts. Error: `404` "Participant not found".
 
 ## Uploads
 
@@ -121,7 +150,7 @@ Returns the caller's uploaded files, newest first.
     "participant_code": "PT-0142",
     "original_name": "PT-0142_session_0918.csv",
     "stored_name": "9f2c1a...",
-    "row_count": 42,
+    "row_count": 36,
     "uploaded_at": "2026-10-08T07:05:12.000Z"
   }
 ]
@@ -148,16 +177,16 @@ curl -X POST http://localhost:3000/api/uploads \
 Response `201`:
 
 ```json
-{ "id": 12, "row_count": 42 }
+{ "id": 12, "row_count": 36 }
 ```
 
-The server checks, in order, that a file was sent, that the participant
-belongs to the caller, that the header contains the five required columns,
-and that there is at least one data row. A failed check deletes the saved
-file and answers `400` with one of these messages:
+The server checks that a file was sent and that the participant belongs to
+the caller, then that the header contains the five required columns and that
+there is at least one data row. A failed check deletes the saved file and
+answers `400` with one of these messages:
 
 - "A participant and a CSV file are required"
-- "Missing column: confidence_score" (naming every missing column)
+- "Missing column: confidence_score", naming every missing column
 - "The file has no data rows"
 
 The required columns are `timestamp`, `exercise`, `result`,
@@ -215,7 +244,8 @@ Response `200`:
 | `summary.invalid_rate` | Percentage of all attempts that were invalid, or `null` if there are none |
 | `points` | One entry per day per exercise: the percentage of that day's valid attempts that were correct |
 
-Error: `404` if the participant doesn't exist or belongs to someone else.
+Error: `404` "Participant not found" if the participant doesn't exist or
+belongs to someone else.
 
 ## Accounts
 
@@ -240,9 +270,28 @@ Creates a therapist account. The role is always `user`.
 { "name": "Test User", "email": "test@example.com", "password": "at-least-8-chars" }
 ```
 
-Response `201`: `{ "id", "name", "email", "role" }`. Errors: `400` if a field
-is missing, the email has no "@", or the password is shorter than 8
-characters; `409` if the email is already used.
+Response `201`: `{ "id", "name", "email", "role" }`.
+
+Errors:
+
+- `400` "Enter a name, an email, and a password of at least 8 characters",
+  also when the email has no "@"
+- `409` "An account with that email already exists"
+
+### PUT /api/users/:id
+
+Renames an account.
+
+```json
+{ "name": "New Name" }
+```
+
+Response `200`: `{ "id": 2, "name": "New Name" }`.
+
+Errors: `400` "Name is required", `404` "User not found".
+
+The Users page offers this only for therapist accounts. The administrator's
+name is set back to "Administrator" every time the server starts.
 
 ### PUT /api/users/:id/password
 
@@ -250,8 +299,10 @@ characters; `409` if the email is already used.
 { "password": "new-password" }
 ```
 
-Response `200`: `{ "id": 2 }`. Errors: `400` for a password shorter than 8
-characters, `404` for an unknown id.
+Response `200`: `{ "id": 2 }`.
+
+Errors: `400` "The new password needs at least 8 characters",
+`404` "User not found".
 
 The administrator's own password comes from `ADMIN_PASSWORD` and is reset to
 it whenever the server starts, so it should be changed in the settings, not
@@ -260,5 +311,6 @@ here.
 ### DELETE /api/users/:id
 
 Deletes the account and all of its participants, uploads, and attempts.
-Response `200`: `{ "id": 2 }`. Errors: `404` for an unknown id, `400` "The
-admin account can't be deleted".
+Response `200`: `{ "id": 2 }`.
+
+Errors: `404` "User not found", `400` "The admin account can't be deleted".
