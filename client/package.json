@@ -14,7 +14,9 @@
     "@refinedev/react-router": "^2.0.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router": "^7.18.4"
+    "react-is": "^19.3.0",
+    "react-router": "^7.18.4",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -17,6 +17,7 @@ export default function Layout() {
               <NavLink to="/participants">Participants</NavLink>
               <NavLink to="/upload">Upload</NavLink>
               <NavLink to="/attempts">Attempts</NavLink>
+              <NavLink to="/trends">Trends</NavLink>
             </>
           )}
         </div>

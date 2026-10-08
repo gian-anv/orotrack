@@ -13,6 +13,7 @@ import Upload from "./pages/Upload.jsx";
 import AttemptList from "./pages/AttemptList.jsx";
 import UserList from "./pages/UserList.jsx";
 import UserCreate from "./pages/UserCreate.jsx";
+import Trends from "./pages/Trends.jsx";
 
 export default function App() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="/attempts" element={<AttemptList />} />
             <Route path="/users" element={<UserList />} />
             <Route path="/users/create" element={<UserCreate />} />
+            <Route path="/trends" element={<Trends />} />
           </Route>
 
           <Route

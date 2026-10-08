@@ -292,3 +292,46 @@ button.plain:hover {
   background: none;
   color: var(--green);
 }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat,
+.card {
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.stat .label {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.stat .value {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+.footnote {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 800px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}

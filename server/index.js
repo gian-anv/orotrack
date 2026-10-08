@@ -9,6 +9,7 @@ import uploadsRouter from "./routes/uploads.js";
 import attemptsRouter from "./routes/attempts.js";
 import requireAdmin from "./requireAdmin.js";
 import usersRouter from "./routes/users.js";
+import trendsRouter from "./routes/trends.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -56,6 +57,7 @@ app.use("/api/participants", requireAuth, participantsRouter);
 app.use("/api/uploads", requireAuth, uploadsRouter);
 app.use("/api/attempts", requireAuth, attemptsRouter);
 app.use("/api/users", requireAuth, requireAdmin, usersRouter);
+app.use("/api/trends", requireAuth, trendsRouter);
 
 app.use("/api", (req, res) => {
   res.status(404).json({ message: "Not found" });
