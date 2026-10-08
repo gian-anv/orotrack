@@ -1,9 +1,16 @@
-import { useList, useDelete } from "@refinedev/core";
+import { useList, useDelete, useUpdate } from "@refinedev/core";
 import { Link } from "react-router";
 
 export default function UserList() {
   const { result, query } = useList({ resource: "users", pagination: { mode: "off" } });
   const { mutate: deleteUser } = useDelete();
+  const { mutate: update } = useUpdate();
+
+  function rename(user) {
+    const name = window.prompt(`New name for ${user.email}`, user.name);
+    if (!name) return;
+    update({ resource: "users", id: user.id, values: { name } });
+  }
 
   async function resetPassword(user) {
     const password = window.prompt(`New password for ${user.email} (at least 8 characters):`);
@@ -55,6 +62,7 @@ export default function UserList() {
               <td>
                 {user.role === "admin" ? "-" : (
                   <>
+                    <button className="plain" onClick={() => rename(user)}>Rename</button>
                     <button className="plain" onClick={() => resetPassword(user)}>Reset password</button>{" "}
                     <button className="danger" onClick={() => handleDelete(user)}>Delete</button>
                   </>

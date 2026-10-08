@@ -43,6 +43,18 @@ router.put("/:id/password", (req, res) => {
   res.json({ id: Number(req.params.id) });
 });
 
+router.put("/:id", (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ message: "Name is required" });
+  }
+  const result = db.prepare("UPDATE users SET name = ? WHERE id = ?").run(name, req.params.id);
+  if (result.changes === 0) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  res.json({ id: Number(req.params.id), name });
+});
+
 router.delete("/:id", (req, res) => {
   const id = Number(req.params.id);
   const user = db.prepare("SELECT role FROM users WHERE id = ?").get(id);
