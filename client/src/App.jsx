@@ -1,19 +1,19 @@
 import { Refine, Authenticated } from "@refinedev/core";
 import routerProvider from "@refinedev/react-router";
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router";
-import authProvider from "./authProvider.js";
-import dataProvider from "./dataProvider.js";
-import Layout from "./Layout.jsx";
+import authProvider from "./providers/authProvider.js";
+import dataProvider from "./providers/dataProvider.js";
+import Layout from "./components/Layout.jsx";
 import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
-import ParticipantList from "./pages/ParticipantList.jsx";
-import ParticipantCreate from "./pages/ParticipantCreate.jsx";
-import ParticipantEdit from "./pages/ParticipantEdit.jsx";
-import Upload from "./pages/Upload.jsx";
-import AttemptList from "./pages/AttemptList.jsx";
-import UserList from "./pages/UserList.jsx";
-import UserCreate from "./pages/UserCreate.jsx";
-import Trends from "./pages/Trends.jsx";
+import ParticipantList from "./pages/participants/ParticipantList.jsx";
+import ParticipantCreate from "./pages/participants/ParticipantCreate.jsx";
+import ParticipantEdit from "./pages/participants/ParticipantEdit.jsx";
+import Upload from "./pages/uploads/Upload.jsx";
+import AttemptList from "./pages/attempts/AttemptList.jsx";
+import UserList from "./pages/users/UserList.jsx";
+import UserCreate from "./pages/users/UserCreate.jsx";
+import Trends from "./pages/trends/Trends.jsx";
 import Help from "./pages/Help.jsx";
 
 export default function App() {

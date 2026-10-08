@@ -1,4 +1,4 @@
-import heroImage from "./assets/hero.svg";
+import heroImage from "../assets/hero.svg";
 
 export default function AuthPage({ children }) {
   return (

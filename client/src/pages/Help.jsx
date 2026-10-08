@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import Logo from "../Logo.jsx";
+import Logo from "../components/Logo.jsx";
 
 const SAMPLE = `timestamp,exercise,result,confidence_score,input_validity
 2026-09-18 09:12:04,/r/ initial,correct,0.91,valid

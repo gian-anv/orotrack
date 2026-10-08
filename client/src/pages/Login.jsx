@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLogin } from "@refinedev/core";
-import AuthPage from "../AuthPage.jsx";
-import Logo from "../Logo.jsx";
+import AuthPage from "../components/AuthPage.jsx";
+import Logo from "../components/Logo.jsx";
 
 export default function Login() {
   const [email, setEmail] = useState("");
