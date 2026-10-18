@@ -1,10 +1,11 @@
-import { useList, useDelete, useUpdate } from "@refinedev/core";
+import { useList, useDelete, useUpdate, useGetIdentity } from "@refinedev/core";
 import { Link } from "react-router";
 
 export default function UserList() {
   const { result, query } = useList({ resource: "users", pagination: { mode: "off" } });
   const { mutate: deleteUser } = useDelete();
   const { mutate: update } = useUpdate();
+  const { data: me } = useGetIdentity();
 
   function rename(user) {
     const name = window.prompt(`New name for ${user.email}`, user.name);
@@ -25,6 +26,28 @@ export default function UserList() {
     });
     const body = await response.json();
     window.alert(response.ok ? "Password updated." : body.message);
+  }
+
+  async function changeRole(user) {
+    const role = user.role === "admin" ? "user" : "admin";
+    const question = role === "admin"
+      ? `Make ${user.email} an admin? They will manage accounts instead of participants. Their participants stay saved and come back if they are made a user again.`
+      : `Make ${user.email} a regular user? They will lose access to the Users page.`;
+    if (!window.confirm(question)) return;
+    const response = await fetch(`/api/users/${user.id}/role`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ role }),
+    });
+    if (response.ok) {
+      query.refetch();
+    } else {
+      const body = await response.json();
+      window.alert(body.message);
+    }
   }
 
   function handleDelete(user) {
@@ -60,11 +83,18 @@ export default function UserList() {
               <td>{user.role}</td>
               <td>{user.participant_count}</td>
               <td>
-                {user.role === "admin" ? "-" : (
+                {user.is_main_admin ? "-" : (
                   <>
                     <button className="plain" onClick={() => rename(user)}>Rename</button>
                     <button className="plain" onClick={() => resetPassword(user)}>Reset password</button>
-                    <button className="danger" onClick={() => handleDelete(user)}>Delete</button>
+                    {user.id !== me?.id && (
+                      <button className="plain" onClick={() => changeRole(user)}>
+                        {user.role === "admin" ? "Make user" : "Make admin"}
+                      </button>
+                    )}
+                    {user.role === "user" && (
+                      <button className="danger" onClick={() => handleDelete(user)}>Delete</button>
+                    )}
                   </>
                 )}
               </td>

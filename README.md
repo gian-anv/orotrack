@@ -13,11 +13,12 @@ and all data in the app is invented.
 ## Features
 
 - Sign in with an account created by the administrator. There is no sign-up.
-- The administrator creates accounts, renames them, resets passwords, and
-  deletes accounts.
+- The administrator creates accounts, renames them, resets passwords,
+  deletes accounts, and can make any account an admin or a regular user again.
 - Each therapist account has its own private participants, uploads, and attempts.
 - Add, edit, and delete participants, stored as codes such as `PT-0142`.
-- Upload a session CSV for a participant.
+- Upload a session CSV for a participant, and export any uploaded file again
+  from the list of uploads.
 - View every attempt, filtered by participant, exercise, input validity, and date.
 - See practice trends per participant: sessions logged, average score,
   invalid input rate, and a chart of average score per session.
@@ -163,5 +164,9 @@ cannot contain commas or quotation marks.
 - Login tokens last seven days and cannot be cancelled early.
 - There is no password reset by email. The administrator resets passwords.
 - Deleting a participant or an account leaves the original CSV files on disk.
-- The administrator's name, email, and password come from the server
-  settings, so they can't be changed on the Users page.
+- The main administrator's name, email, and password come from the server
+  settings, so they can't be changed on the Users page, and its role can't
+  be changed.
+- Admins see only the Users page. An account made admin keeps its
+  participants, but can't see them until it is made a regular user again.
+- Admin accounts can't be deleted. Make them a regular user first.

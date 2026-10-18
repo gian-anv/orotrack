@@ -25,7 +25,9 @@ router.post("/login", (req, res) => {
 });
 
 router.get("/me", requireAuth, (req, res) => {
-  res.json({ userId: req.user.userId, email: req.user.email, role: req.user.role });
+  const user = db.prepare("SELECT id, email, role FROM users WHERE id = ?").get(req.user.userId);
+  if (!user) return res.status(401).json({ message: "Not logged in" });
+  res.json({ userId: user.id, email: user.email, role: user.role });
 });
 
 export default router;

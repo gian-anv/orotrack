@@ -30,6 +30,25 @@ export default function Upload() {
     }
   }
 
+  async function exportFile(upload) {
+    const response = await fetch(`/api/uploads/${upload.id}/file`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    if (!response.ok) {
+      const body = await response.json();
+      window.alert(body.message);
+      return;
+    }
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = upload.original_name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   return (
     <div>
       <h1>Upload session log</h1>
@@ -60,6 +79,7 @@ export default function Upload() {
             <th>Participant</th>
             <th>Rows</th>
             <th>Uploaded</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +89,9 @@ export default function Upload() {
               <td>{upload.participant_code}</td>
               <td>{upload.row_count}</td>
               <td>{new Date(upload.uploaded_at).toLocaleString()}</td>
+              <td>
+                <button className="plain" onClick={() => exportFile(upload)}>Export</button>
+              </td>
             </tr>
           ))}
         </tbody>

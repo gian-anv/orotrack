@@ -26,6 +26,24 @@ router.get("/", (req, res) => {
   res.json(rows);
 });
 
+router.get("/:id/file", (req, res) => {
+  const row = db
+    .prepare(`
+      SELECT uploads.original_name, uploads.stored_name
+      FROM uploads
+      JOIN participants ON participants.id = uploads.participant_id
+      WHERE uploads.id = ? AND participants.user_id = ?
+    `)
+    .get(Number(req.params.id), req.user.userId);
+  if (!row) return res.status(404).json({ message: "Upload not found" });
+
+  const filePath = path.resolve(uploadDir, row.stored_name);
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "The original file is no longer on the server" });
+  }
+  res.download(filePath, row.original_name);
+});
+
 router.post("/", upload.single("file"), (req, res) => {
   const participant = db
     .prepare("SELECT id FROM participants WHERE id = ? AND user_id = ?")

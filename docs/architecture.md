@@ -60,11 +60,11 @@ functions: uploading a file, resetting a password, and loading trends.
 | `/login` | `pages/Login.jsx` | Anyone signed out | Sign in |
 | `/help` | `pages/Help.jsx` | Anyone | How the app works and the CSV format |
 | `/` | `pages/Home.jsx` | Signed in | Sends admins to `/users` and therapists to `/participants` |
-| `/users` | `pages/users/UserList.jsx` | Admin | List accounts; rename, reset password, delete |
+| `/users` | `pages/users/UserList.jsx` | Admin | List accounts; rename, reset password, change role, delete |
 | `/users/create` | `pages/users/UserCreate.jsx` | Admin | Create a therapist account |
 | `/participants` | `pages/participants/ParticipantList.jsx` | Therapist | List and delete participants |
 | `/participants/create`, `/participants/edit/:id` | `pages/participants/ParticipantCreate.jsx`, `ParticipantEdit.jsx` | Therapist | Add or change a participant |
-| `/upload` | `pages/uploads/Upload.jsx` | Therapist | Upload a session CSV and list uploaded files |
+| `/upload` | `pages/uploads/Upload.jsx` | Therapist | Upload a session CSV, list uploaded files, and export them |
 | `/attempts` | `pages/attempts/AttemptList.jsx` | Therapist | Every attempt, with filters |
 | `/trends` | `pages/trends/Trends.jsx` | Therapist | Summary numbers and a chart for one participant |
 
@@ -102,10 +102,11 @@ rule.
 - **Passwords** are stored only as bcrypt hashes. The original password is
   never saved.
 - **Roles:** each user has the role `admin` or `user`. The first user row is
-  the administrator. `setupAdmin.js` keeps it in sync with the `ADMIN_EMAIL`
-  and `ADMIN_PASSWORD` settings every time the server starts, and names it
-  "Administrator". Every other account is created by the administrator and
-  has the role `user`.
+  the main administrator. `setupAdmin.js` keeps it in sync with the
+  `ADMIN_EMAIL` and `ADMIN_PASSWORD` settings every time the server starts,
+  and names it "Administrator". Every other account is created with the role
+  `user`, and any admin can later make it an admin or a user again. The main
+  administrator's role can't be changed, and no admin can change their own.
 - **Tokens:** a successful sign-in returns a JSON Web Token containing the
   user's id, email, and role, signed with `JWT_SECRET` and valid for seven
   days. The browser keeps it in local storage and sends it in the
@@ -114,7 +115,11 @@ rule.
   and puts its contents in `req.user`. A missing, altered, or expired token
   gets 401.
 - **`middleware/requireAdmin.js`** runs after `requireAuth` on the account
-  routes and answers 403 unless `req.user.role` is `admin`.
+  routes and answers 403 unless the user's role in the database is `admin`.
+  It reads the database rather than the token, so a role change applies at
+  once instead of when the token expires. `GET /api/me` also returns the
+  role from the database, so the browser shows the right pages after a
+  reload.
 
 ## Private data
 
@@ -127,8 +132,10 @@ taken from the token:
   through a join or by checking the participant first.
 
 A row that belongs to someone else behaves as if it doesn't exist: reads
-return 404, and updates and deletes change nothing. The administrator owns no
-participants and has no route that reads other users' data.
+return 404, and updates and deletes change nothing. The main administrator
+owns no participants, and no admin has a route that reads other users' data.
+An account made admin keeps its own participants but only sees the Users page
+until it is made a regular user again.
 
 ## Request examples
 

@@ -45,6 +45,15 @@ const authProvider = {
     const me = await response.json();
     return me.role;
   },
+
+  getIdentity: async () => {
+    const response = await fetch("/api/me", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    if (!response.ok) return null;
+    const me = await response.json();
+    return { id: me.userId, email: me.email };
+  },
 };
 
 export default authProvider;

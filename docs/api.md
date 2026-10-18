@@ -16,12 +16,14 @@ except for file uploads, which use multipart form data.
 | `DELETE /api/participants/:id` | Signed in | `routes/participants.js` |
 | `GET /api/uploads` | Signed in | `routes/uploads.js` |
 | `POST /api/uploads` | Signed in | `routes/uploads.js` |
+| `GET /api/uploads/:id/file` | Signed in | `routes/uploads.js` |
 | `GET /api/attempts` | Signed in | `routes/attempts.js` |
 | `GET /api/trends/:participantId` | Signed in | `routes/trends.js` |
 | `GET /api/users` | Admin | `routes/users.js` |
 | `POST /api/users` | Admin | `routes/users.js` |
 | `PUT /api/users/:id` | Admin | `routes/users.js` |
 | `PUT /api/users/:id/password` | Admin | `routes/users.js` |
+| `PUT /api/users/:id/role` | Admin | `routes/users.js` |
 | `DELETE /api/users/:id` | Admin | `routes/users.js` |
 
 ## Authentication
@@ -37,7 +39,7 @@ Authorization: Bearer <token>
 |---|---|
 | Public | No token needed |
 | Signed in | Any valid token. Data is limited to the caller's own. |
-| Admin | A valid token whose role is `admin` |
+| Admin | A valid token for an account whose role is currently `admin` in the database |
 
 ## Errors
 
@@ -193,6 +195,15 @@ The required columns are `timestamp`, `exercise`, `result`,
 `confidence_score`, and `input_validity`. An empty `result` is stored as no
 value.
 
+### GET /api/uploads/:id/file
+
+Signed in. Sends back the original CSV file exactly as it was uploaded, as a
+download named with its original file name.
+
+Errors: `404` "Upload not found" if the upload doesn't exist or belongs to
+someone else, `404` "The original file is no longer on the server" if the
+file is missing from disk.
+
 ## Attempts
 
 ### GET /api/attempts
@@ -254,11 +265,13 @@ All admin only. Any other caller gets `403` "Admins only".
 ### GET /api/users
 
 Returns every account, sorted by id. Password hashes are never returned.
+`is_main_admin` is `1` for the account set up from `ADMIN_EMAIL` (the first
+user row) and `0` for every other account.
 
 ```json
 [
-  { "id": 1, "name": "Administrator", "email": "admin@example.com", "role": "admin", "participant_count": 0 },
-  { "id": 2, "name": "Test User", "email": "test@example.com", "role": "user", "participant_count": 3 }
+  { "id": 1, "name": "Administrator", "email": "admin@example.com", "role": "admin", "is_main_admin": 1, "participant_count": 0 },
+  { "id": 2, "name": "Test User", "email": "test@example.com", "role": "user", "is_main_admin": 0, "participant_count": 3 }
 ]
 ```
 
@@ -290,8 +303,8 @@ Response `200`: `{ "id": 2, "name": "New Name" }`.
 
 Errors: `400` "Name is required", `404` "User not found".
 
-The Users page offers this only for therapist accounts. The administrator's
-name is set back to "Administrator" every time the server starts.
+The Users page offers this for every account except the main administrator,
+whose name is set back to "Administrator" every time the server starts.
 
 ### PUT /api/users/:id/password
 
@@ -307,6 +320,23 @@ Errors: `400` "The new password needs at least 8 characters",
 The administrator's own password comes from `ADMIN_PASSWORD` and is reset to
 it whenever the server starts, so it should be changed in the settings, not
 here.
+
+### PUT /api/users/:id/role
+
+Makes an account an admin or a regular user.
+
+```json
+{ "role": "admin" }
+```
+
+Response `200`: `{ "id": 2, "role": "admin" }`.
+
+Errors: `400` "Role must be admin or user", `400` "The main admin account's
+role can't be changed", `400` "You can't change your own role",
+`404` "User not found".
+
+The change applies on the account's next request. Its existing token keeps
+working, because admin checks read the role from the database.
 
 ### DELETE /api/users/:id
 

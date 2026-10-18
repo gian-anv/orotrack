@@ -8,6 +8,7 @@ router.get("/", (req, res) => {
   const rows = db
     .prepare(`
       SELECT id, name, email, role,
+        id = (SELECT MIN(id) FROM users) AS is_main_admin,
         (SELECT COUNT(*) FROM participants WHERE participants.user_id = users.id) AS participant_count
       FROM users
       ORDER BY id
@@ -41,6 +42,26 @@ router.put("/:id/password", (req, res) => {
   const result = db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(hash, Number(req.params.id));
   if (result.changes === 0) return res.status(404).json({ message: "User not found" });
   res.json({ id: Number(req.params.id) });
+});
+
+router.put("/:id/role", (req, res) => {
+  const id = Number(req.params.id);
+  const { role } = req.body || {};
+  if (role !== "admin" && role !== "user") {
+    return res.status(400).json({ message: "Role must be admin or user" });
+  }
+  if (!db.prepare("SELECT id FROM users WHERE id = ?").get(id)) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  const mainAdmin = db.prepare("SELECT MIN(id) AS id FROM users").get();
+  if (id === mainAdmin.id) {
+    return res.status(400).json({ message: "The main admin account's role can't be changed" });
+  }
+  if (id === req.user.userId) {
+    return res.status(400).json({ message: "You can't change your own role" });
+  }
+  db.prepare("UPDATE users SET role = ? WHERE id = ?").run(role, id);
+  res.json({ id, role });
 });
 
 router.put("/:id", (req, res) => {
