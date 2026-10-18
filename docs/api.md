@@ -17,6 +17,7 @@ except for file uploads, which use multipart form data.
 | `GET /api/uploads` | Signed in | `routes/uploads.js` |
 | `POST /api/uploads` | Signed in | `routes/uploads.js` |
 | `GET /api/uploads/:id/file` | Signed in | `routes/uploads.js` |
+| `DELETE /api/uploads/:id` | Signed in | `routes/uploads.js` |
 | `GET /api/attempts` | Signed in | `routes/attempts.js` |
 | `GET /api/trends/:participantId` | Signed in | `routes/trends.js` |
 | `GET /api/users` | Admin | `routes/users.js` |
@@ -203,6 +204,16 @@ download named with its original file name.
 Errors: `404` "Upload not found" if the upload doesn't exist or belongs to
 someone else, `404` "The original file is no longer on the server" if the
 file is missing from disk.
+
+### DELETE /api/uploads/:id
+
+Signed in. Deletes the upload, all of its attempts, and its original file.
+Trends for the participant are recalculated from what remains.
+
+Response `200`: `{ "id": 12 }`.
+
+Error: `404` "Upload not found" if the upload doesn't exist or belongs to
+someone else.
 
 ## Attempts
 

@@ -17,8 +17,8 @@ and all data in the app is invented.
   deletes accounts, and can make any account an admin or a regular user again.
 - Each therapist account has its own private participants, uploads, and attempts.
 - Add, edit, and delete participants, stored as codes such as `PT-0142`.
-- Upload a session CSV for a participant, and export any uploaded file again
-  from the list of uploads.
+- Upload a session CSV for a participant. Any uploaded file can be exported
+  again or deleted, which also removes its attempts.
 - View every attempt, filtered by participant, exercise, input validity, and date.
 - See practice trends per participant: sessions logged, average score,
   invalid input rate, and a chart of average score per session.
@@ -159,11 +159,13 @@ cannot contain commas or quotation marks.
 
 ## Known limits
 
-- Uploading the same file twice saves its rows twice.
+- Uploading the same file twice saves its rows twice. Delete the extra copy
+  on the Upload page.
 - Participant codes are unique across all accounts.
 - Login tokens last seven days and cannot be cancelled early.
 - There is no password reset by email. The administrator resets passwords.
 - Deleting a participant or an account leaves the original CSV files on disk.
+  Deleting a single upload removes its file.
 - The main administrator's name, email, and password come from the server
   settings, so they can't be changed on the Users page, and its role can't
   be changed.

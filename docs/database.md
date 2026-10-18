@@ -97,7 +97,9 @@ The link from participants to users has no cascade, so the database refuses
 to delete a user who still owns participants. That is why the route deletes
 the participants first.
 
-Deleting rows does not delete the original CSV files from disk.
+Deleting a participant or a user does not delete the original CSV files from
+disk. `DELETE /api/uploads/:id` is the exception: it deletes the upload's
+file as well as its rows.
 
 ## Migrations
 

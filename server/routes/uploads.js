@@ -44,6 +44,23 @@ router.get("/:id/file", (req, res) => {
   res.download(filePath, row.original_name);
 });
 
+router.delete("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const row = db
+    .prepare(`
+      SELECT uploads.stored_name
+      FROM uploads
+      JOIN participants ON participants.id = uploads.participant_id
+      WHERE uploads.id = ? AND participants.user_id = ?
+    `)
+    .get(id, req.user.userId);
+  if (!row) return res.status(404).json({ message: "Upload not found" });
+
+  db.prepare("DELETE FROM uploads WHERE id = ?").run(id);
+  fs.rmSync(path.resolve(uploadDir, row.stored_name), { force: true });
+  res.json({ id });
+});
+
 router.post("/", upload.single("file"), (req, res) => {
   const participant = db
     .prepare("SELECT id FROM participants WHERE id = ? AND user_id = ?")

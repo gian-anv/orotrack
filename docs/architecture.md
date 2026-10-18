@@ -64,7 +64,7 @@ functions: uploading a file, resetting a password, and loading trends.
 | `/users/create` | `pages/users/UserCreate.jsx` | Admin | Create a therapist account |
 | `/participants` | `pages/participants/ParticipantList.jsx` | Therapist | List and delete participants |
 | `/participants/create`, `/participants/edit/:id` | `pages/participants/ParticipantCreate.jsx`, `ParticipantEdit.jsx` | Therapist | Add or change a participant |
-| `/upload` | `pages/uploads/Upload.jsx` | Therapist | Upload a session CSV, list uploaded files, and export them |
+| `/upload` | `pages/uploads/Upload.jsx` | Therapist | Upload a session CSV, list uploaded files, and export or delete them |
 | `/attempts` | `pages/attempts/AttemptList.jsx` | Therapist | Every attempt, with filters |
 | `/trends` | `pages/trends/Trends.jsx` | Therapist | Summary numbers and a chart for one participant |
 

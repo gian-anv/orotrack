@@ -49,6 +49,21 @@ export default function Upload() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  async function deleteFile(upload) {
+    const question = `Delete ${upload.original_name} for ${upload.participant_code}? Its ${upload.row_count} attempts will be removed from Attempts and Trends.`;
+    if (!window.confirm(question)) return;
+    const response = await fetch(`/api/uploads/${upload.id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    if (response.ok) {
+      uploads.query.refetch();
+    } else {
+      const body = await response.json();
+      window.alert(body.message);
+    }
+  }
+
   return (
     <div>
       <h1>Upload session log</h1>
@@ -91,6 +106,7 @@ export default function Upload() {
               <td>{new Date(upload.uploaded_at).toLocaleString()}</td>
               <td>
                 <button className="plain" onClick={() => exportFile(upload)}>Export</button>
+                <button className="danger" onClick={() => deleteFile(upload)}>Delete</button>
               </td>
             </tr>
           ))}
